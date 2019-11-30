@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crazy.system.dao.CourseMapper">
+    <resultMap id="BaseResultMap" type="com.crazy.system.entity.Course">
+        <id column="id" property="id"/>
+        <result column="course_number" property="courseNumber"/>
+        <result column="course_name" property="courseName"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <insert id="insertCourse">
+        insert into course
+        (course_number, course_name, create_time, update_time)
+        value
+        (#{course.courseNumber}, #{course.courseName}, #{course.createTime}, #{course.updateTime})
+    </insert>
+
+    <update id="updateCourse">
+        update course set
+        course_name=#{course.courseName},update_time=#{course.updateTime}
+        where id=#{course.id}
+    </update>
+
+    <delete id="deleteCourse">
+        delete from course where id = #{id}
+    </delete>
+
+    <select id="queryCourseByNumber" resultMap="BaseResultMap">
+        select * from course where course_number = #{courseNumber}
+    </select>
+
+    <select id="queryByIdAndNumber" resultMap="BaseResultMap">
+        select * from course where course_number = #{courseNumber} and id != #{id}
+    </select>
+
+    <select id="queryByCourseNumber" resultMap="BaseResultMap">
+        select * from course where course_number = #{courseNumber}
+    </select>
+    <select id="list" resultMap="BaseResultMap">
+        select * from course
+    </select>
+
+
+</mapper>

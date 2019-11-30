@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crazy.system.dao.StudentMapper">
+    <resultMap id="BaseResultMap" type="com.crazy.system.entity.Student">
+        <id column="id" property="id"/>
+        <result column="student_number" property="studentNumber"/>
+        <result column="student_name" property="studentName"/>
+        <result column="student_sex" property="studentSex"/>
+        <result column="student_age" property="studentAge"/>
+        <result column="student_class" property="studentClass"/>
+        <result column="student_department" property="studentDepartment"/>
+        <result column="student_phone" property="studentPhone"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="student_delete" property="studentDelete"/>
+        <result column="delete_time" property="deleteTime"/>
+        <result column="student_grade" property="studentGrade"/>
+    </resultMap>
+
+    <resultMap id="QueryResultMap" type="com.crazy.system.entity.Student" extends="BaseResultMap">
+        <collection property="reports" column="student_number" javaType="ArrayList"
+                    ofType="com.crazy.system.entity.Report" select="com.crazy.system.dao.ReportMapper.queryByStudentNumber">
+        </collection>
+    </resultMap>
+
+    <insert id="insertStudent">
+        insert into student
+        (student_number,student_name,student_sex,student_age,student_class,student_department,student_phone,create_time,update_time,student_delete,delete_time,student_grade)
+        value
+        (#{student.studentNumber}, #{student.studentName}, #{student.studentSex}, #{student.studentAge}, #{student.studentClass},
+        #{student.studentDepartment}, #{student.studentPhone}, #{student.createTime}, #{student.updateTime}, #{student.studentDelete}, #{student.deleteTime}, #{student.studentGrade})
+    </insert>
+
+    <update id="updateStudent">
+        update student set
+        student_name=#{student.studentName},student_sex=#{student.studentSex},student_age=#{student.studentAge},
+        student_class= #{student.studentClass},student_department=#{student.studentDepartment},student_phone=#{student.studentPhone},
+        update_time=#{student.updateTime},student_grade=#{student.studentGrade}
+        where id = #{student.id}
+    </update>
+    <update id="deleteStudent">
+        update student set student_delete = 1, delete_time = #{deleteTime} where id = #{id}
+    </update>
+
+    <select id="queryStudentByNumber" resultMap="BaseResultMap">
+        select * from student where student_number = #{studentNumber}
+    </select>
+
+    <select id="queryStudentByIdAndNumber" resultMap="BaseResultMap">
+        select * from student where student_number = #{studentNumber} and id != #{id}
+    </select>
+    <select id="list" resultMap="BaseResultMap">
+        select * from student where student_delete != 1
+    </select>
+
+    <select id="queryById" resultMap="QueryResultMap">
+        select * from student where id = #{id}
+    </select>
+
+    <select id="queryStudentIdByGrade" resultMap="QueryResultMap">
+        <!--select * from student where student_grade=#{studentGrade} and student_department=#{studentDepartment} and `student_class`=#{studentClass} and student_delete = 0-->
+        <!--<if test="keyword != null and keyword != ''">-->
+        <!--and student_name like concat('%',#{keyword},'%')-->
+        <!--</if>-->
+        select * from student
+        <where>
+            <if test="studentGrade != null and studentGrade != ''">
+                and student_grade=#{studentGrade}
+            </if>
+            <if test="studentDepartment != null and studentDepartment != ''">
+                and student_department=#{studentDepartment}
+            </if>
+            <if test="studentClass != null and studentClass != ''">
+                and `student_class`=#{studentClass}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                and student_name like concat('%',#{keyword},'%')
+            </if>
+            and student_delete = 0
+        </where>
+
+    </select>
+
+
+</mapper>

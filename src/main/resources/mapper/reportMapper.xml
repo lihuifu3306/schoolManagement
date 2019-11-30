@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crazy.system.dao.ReportMapper">
+    <resultMap id="BaseResultMap" type="com.crazy.system.entity.Report">
+        <id column="id" property="id"/>
+        <result column="student_number" property="studentNumber"/>
+        <result column="course_number" property="courseNumber"/>
+        <result column="report_type" property="reportType"/>
+        <result column="report_score" property="reportScore"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <resultMap id="QueryResultMap" type="com.crazy.system.entity.Report" extends="BaseResultMap">
+        <collection property="courses" column="course_number" javaType="ArrayList"
+                    ofType="com.crazy.system.entity.Course" select="com.crazy.system.dao.CourseMapper.queryByCourseNumber">
+        </collection>
+    </resultMap>
+
+    <insert id="insertReport">
+        insert into report
+        (student_number,course_number,report_type,report_score,create_time,update_time)
+        value
+        (#{report.studentNumber},#{report.courseNumber},#{report.reportType},#{report.reportScore},#{report.createTime},#{report.updateTime})
+    </insert>
+
+    <update id="updateReport">
+        update report set
+        report_score = #{reportScore},update_time=#{updateTime}
+        where id = #{id}
+    </update>
+    <delete id="delete">
+        delete from report where id = #{id}
+    </delete>
+
+    <select id="queryByReportType" resultMap="BaseResultMap">
+        select * from report
+        where student_number=#{studentNumber} and course_number=#{courseNumber} and report_type=#{reportType}
+    </select>
+
+    <select id="queryByStudentNumber" resultMap="QueryResultMap">
+        select * from report
+        where student_number=#{studentNumber}
+    </select>
+
+    <select id="queryByNumberAndType" resultMap="QueryResultMap">
+        select * from report
+        where student_number = #{studentNumber}
+        <if test="keyword != null and keyword != ''">
+            and report_type like concat('%', #{keyword}, '%')
+        </if>
+    </select>
+    <select id="queryReport" resultMap="QueryResultMap">
+        select * from report
+        where student_number in
+        <foreach collection="ids" index="index" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+</mapper>
